@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bi-weekly Consumer Product Updates</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f5f3;color:#1a1a1a;min-height:100vh;}
+.shell{max-width:900px;margin:0 auto;padding:2rem 1.25rem;}
+h1{font-size:1.4rem;font-weight:500;margin-bottom:.2rem;}
+.sub{font-size:.85rem;color:#666;margin-bottom:1.75rem;}
+.product-tabs{display:flex;border-bottom:1px solid #ddd;margin-bottom:1.75rem;}
+.product-tab{padding:10px 22px;font-size:14px;border:none;background:transparent;cursor:pointer;color:#666;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.product-tab:hover{color:#1a1a1a;}
+.product-tab.active{color:#1a1a1a;font-weight:500;border-bottom-color:#1a1a1a;}
+.view-toggle{display:flex;gap:8px;margin-bottom:1.25rem;}
+.vtab{padding:5px 14px;font-size:12px;border:1px solid #ddd;border-radius:6px;background:transparent;cursor:pointer;color:#555;}
+.vtab.active{background:#eee;font-weight:500;color:#1a1a1a;}
+.vtab:disabled{color:#bbb;cursor:not-allowed;}
+.hint{font-size:12px;color:#888;margin-bottom:8px;}
+.sec-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:6px;}
+textarea{width:100%;font-family:monospace;font-size:13px;padding:12px;border:1px solid #ddd;border-radius:8px;background:#fff;resize:vertical;line-height:1.6;color:#1a1a1a;}
+.btn{padding:8px 18px;font-size:13px;font-weight:500;border:1px solid #ccc;border-radius:8px;background:#fff;cursor:pointer;}
+.btn:hover{background:#f0f0f0;}
+.btn:disabled{opacity:.5;cursor:wait;}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#ddd;flex-shrink:0;}
+.status-dot.ready{background:#639922;}
+.errmsg{font-size:12px;color:#a32d2d;margin-top:6px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.75rem;}
+.kpi-card{background:#eee;border-radius:8px;padding:13px 15px;}
+.kpi-label{font-size:11px;color:#666;margin-bottom:5px;}
+.kpi-value{font-size:20px;font-weight:500;margin-bottom:3px;}
+.kpi-change{font-size:11px;}
+.analysis-block{border-left:2.5px solid #ddd;padding-left:16px;margin-bottom:1.75rem;}
+.analysis-block p{font-size:14px;line-height:1.75;color:#333;}
+.roadmap{display:flex;flex-direction:column;gap:6px;margin-bottom:1.5rem;}
+.ritem{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;background:#fff;border:1px solid #e5e5e5;border-radius:8px;}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px;white-space:nowrap;margin-top:1px;}
+.badge-complete{background:#eaf3de;color:#3B6D11;}
+.badge-in_progress{background:#e6f1fb;color:#185FA5;}
+.badge-at_risk{background:#FAECE7;color:#993C1D;}
+.badge-planned{background:#f1efe8;color:#5F5E5A;}
+.iname{font-size:14px;font-weight:500;margin-bottom:2px;}
+.idetail{font-size:12px;color:#666;}
+.notes-box{background:#fffbea;border:1px solid #f0d080;border-radius:8px;padding:10px 14px;margin-bottom:1.5rem;}
+.notes-lbl{font-size:12px;font-weight:500;color:#a07800;margin-bottom:4px;}
+.notes-box p{font-size:13px;color:#7a5c00;}
+.musings-block{border-left:2.5px solid #f0d080;padding-left:16px;margin-bottom:1.75rem;}
+.musings-block p{font-size:14px;line-height:1.75;color:#555;white-space:pre-wrap;}
+.market-box{background:#f0f4fb;border:1px solid #c8d8f0;border-radius:8px;padding:14px 16px;margin-bottom:1.75rem;}
+.market-hdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;}
+.market-lbl{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:#185FA5;}
+.market-date{font-size:11px;color:#888;}
+.market-box p{font-size:13px;line-height:1.75;color:#1a2f4a;margin-bottom:10px;}
+.market-sources{display:flex;flex-direction:column;gap:4px;}
+.market-sources a{font-size:12px;color:#185FA5;text-decoration:none;}
+.market-sources a:hover{text-decoration:underline;}
+.img-drop{border:1.5px dashed #ccc;border-radius:8px;padding:14px;background:#fafafa;cursor:pointer;text-align:center;}
+.img-drop:hover,.img-drop.over{border-color:#888;background:#f0f0f0;}
+.img-drop-hint{font-size:12px;color:#888;}
+.img-drop-hint span{color:#185FA5;text-decoration:underline;}
+.img-previews{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.ithumb{position:relative;width:72px;height:72px;border-radius:6px;overflow:hidden;border:1px solid #ddd;background:#eee;}
+.ithumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.iremove{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:11px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.dash-imgs{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:1.75rem;}
+.dthumb{width:90px;height:90px;border-radius:8px;overflow:hidden;border:1px solid #ddd;cursor:pointer;background:#eee;}
+.dthumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.dthumb:hover img{opacity:.85;}
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:1000;align-items:center;justify-content:center;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:90vw;max-height:88vh;border-radius:8px;object-fit:contain;}
+.lb-close{position:fixed;top:18px;right:22px;font-size:28px;color:#fff;cursor:pointer;background:none;border:none;}
+.lb-nav{position:fixed;top:50%;transform:translateY(-50%);font-size:28px;color:#fff;cursor:pointer;background:none;border:none;padding:0 16px;user-select:none;}
+.lb-nav.prev{left:8px;}
+.lb-nav.next{right:8px;}
+</style>
+</head>
+<body>
+<div class="shell">
+  <h1>Bi-weekly Consumer Product Updates</h1>
+  <p class="sub">RV Sales &middot; Used Acquisition &middot; Retail &middot; RVs.com</p>
+  <div class="product-tabs">
+    <button class="product-tab active" onclick="switchProduct(0)">RV Sales</button>
+    <button class="product-tab" onclick="switchProduct(1)">Used Acquisition</button>
+    <button class="product-tab" onclick="switchProduct(2)">Retail</button>
+    <button class="product-tab" onclick="switchProduct(3)">RVs.com</button>
+  </div>
+  <div id="panels"></div>
+</div>
+
+<div class="lightbox" id="lightbox" onclick="lbClose(event)">
+  <button class="lb-close" onclick="lbClose()">&#215;</button>
+  <button class="lb-nav prev" onclick="lbNav(-1,event)">&#8249;</button>
+  <img id="lb-img" src="" alt="" />
+  <button class="lb-nav next" onclick="lbNav(1,event)">&#8250;</button>
+</div>
+
+<script>
+var PROXY = "https://updatesdashboard-proxy.vercel.app/api/dashboard";
+
+var PRODUCTS = ["RV Sales","Used Acquisition","Retail","RVs.com"];
+
+var PLACEHOLDERS = [
+  "# RV Sales — Q1 2025\n\nKPIs:\n- Units Sold: 142 (up 11% vs Q4)\n- Revenue: $3.1M (up 8%)\n- Avg Deal Size: $21,800 (flat)\n- Lead-to-Close Rate: 18% (up 2pts)\n\nRoadmap:\n- Spring promo campaign — IN PROGRESS — launching April 10\n- New inventory system — COMPLETE — went live March 1\n- Fleet partnership — PLANNED — Q2 kickoff",
+  "# Used Acquisition — Q1 2025\n\nKPIs:\n- Units Acquired: 89 (down 5% vs Q4)\n- Avg Acquisition Cost: $14,200 (up 3%)\n- Days to Resale: 22 days (improved from 28)\n- Reconditioning Cost: $1,450/unit (flat)\n\nRoadmap:\n- Auction channel expansion — IN PROGRESS — 2 new partners onboarded\n- Trade-in appraisal tool — AT RISK — vendor delay\n- Q2 volume target — PLANNED — 110 units",
+  "# Retail — Q1 2025\n\nKPIs:\n- Transactions: 1,840 (up 6%)\n- Revenue: $920K (up 4%)\n- Avg Basket Size: $500 (flat)\n- Return Rate: 4.2% (down from 5.1%)\n\nRoadmap:\n- POS upgrade — COMPLETE — all locations live\n- Loyalty program launch — IN PROGRESS — beta in 2 stores\n- Seasonal inventory refresh — PLANNED — May",
+  "# RVs.com — Q1 2025\n\nKPIs:\n- Monthly Visitors: 420K (up 14% vs Q4)\n- Leads Generated: 3,200 (up 9%)\n- Lead-to-Contact Rate: 38% (flat)\n- Listings Active: 1,840 (up 5%)\n\nRoadmap:\n- Search redesign — IN PROGRESS — UX testing underway\n- Dealer portal v2 — PLANNED — Q2 launch\n- SEO content expansion — IN PROGRESS — 40 articles published\n- Mobile app — AT RISK — resourcing gap"
+];
+
+var INTEL_PROMPTS = {
+  "RV Sales": "Search the web for the latest trends in new RV sales in the US in 2026. Cover shipment volumes, retail registration data, consumer demand drivers, and the outlook. Return JSON with fields: summary (3-5 sentences with specific data points) and sources (array of 3 objects each with label and url).",
+  "Used Acquisition": "Search the web for the latest trends in owners selling or trading in their RVs in the US in 2026. Cover trade-in volumes, private sales trends, used RV values, and auction activity. Return JSON with fields: summary (3-5 sentences with specific data points) and sources (array of 3 objects each with label and url).",
+  "Retail": "Search the web for the latest trends in the sale of camping gear and RV equipment in the US in 2026. Cover market size, top-performing categories, channel shifts, and consumer behavior. Return JSON with fields: summary (3-5 sentences with specific data points) and sources (array of 3 objects each with label and url)."
+};
+
+var INTEL_SYSTEM = "You are a market research analyst. Search the web and return ONLY a valid JSON object — no markdown fences, no preamble. Format: {\"summary\":\"3-5 sentence summary with data points.\",\"sources\":[{\"label\":\"Title\",\"url\":\"https://...\"},{\"label\":\"Title\",\"url\":\"https://...\"},{\"label\":\"Title\",\"url\":\"https://...\"}]}";
+
+var STATIC_INTEL = {
+  "RV Sales": {
+    summary: "The broader RV sales market is in a period of measured stabilization. 2025 ended with 342,220 wholesale shipments — modest 2.5% growth over 2024 — though retail registrations showed a more cautious picture, with November 2025 down 11.68% year-over-year amid economic uncertainty. The RVIA projects 2026 shipments in the mid-300,000 unit range with stronger momentum expected as interest rates ease. Towables continue to outperform motorized units, and Class C motorhomes were the only motorized segment to post positive growth. Financing costs and consumer confidence remain the key headwinds to watch.",
+    sources: [
+      {label:"RVIA: RV shipments end 2025 with modest 2.5% growth", url:"https://www.rvia.org/reports-trends/rv-shipment-reports/2025-12/rv-shipments-end-2025-342220-units-modest-25-growth-over-2024"},
+      {label:"Statistical Surveys: Top 5 RV industry takeaways from 2025", url:"https://rvbusiness.com/ssi-top-five-rv-industry-takeaways-from-2025/"},
+      {label:"RVDA: RV market momentum builds toward 2026", url:"https://rv-pro.com/features/rv-market-momentum-builds-toward-2026/"}
+    ]
+  },
+  "Used Acquisition": {
+    summary: "The used RV supply pipeline is well-stocked and shifting in favor of acquirers. Used RV values have reset to pre-pandemic levels, with towable values softening as holdover 2024-2025 model-year inventory enters the market. Private peer-to-peer sales were up 111% year-over-year in mid-2025 as owners bypassed trade-ins for better returns. Auction volumes for used towables rose 13% as dealers cleared lots ahead of 2026 model arrivals. Used RV online search traffic is up 14% year-over-year, and the segment is projected to grow at a 7.28% CAGR through 2030.",
+    sources: [
+      {label:"Bish's RV: RV industry market update — fall 2025", url:"https://www.bishs.com/blog/rv-industry-market-update-fall-2025/"},
+      {label:"Bish's RV: July 2025 new & used sales trends", url:"https://www.bishs.com/blog/rv-sales-update-july-2025/"},
+      {label:"Bish's RV: 2026 used RV values reset + market shifts", url:"https://www.bishs.com/blog/rv-industry-2026-used-rv-values-reset-new-tech-new-brands-and-big-buyer-shifts/"}
+    ]
+  },
+  "Retail": {
+    summary: "The camping gear and RV equipment retail market faces a mixed environment heading into 2026. Long-term forecasts remain positive with the global camping equipment market projected to grow at a 5-9% CAGR through the early 2030s, but near-term conditions are soft. Camping equipment sales were down 10% in dollars year-to-date through August 2025, pressured by tariff-driven price increases and consumer caution on discretionary spending. Bright spots include coolers, portable power accessories, and outdoor cookware. Over half of sports equipment dollars are now transacted online, accelerating a shift away from specialty retail.",
+    sources: [
+      {label:"Shop Eat Surf Outdoor: outdoor industry trends & consumer shifts 2025", url:"https://shop-eat-surf-outdoor.com/news/outdoor-industry-trends-consumer-shifts-top-brands-for-2025/614119/"},
+      {label:"Mordor Intelligence: camping equipment market analysis 2026", url:"https://www.mordorintelligence.com/industry-reports/camping-equipment-market"},
+      {label:"Grand View Research: US camping & hiking gear market report", url:"https://www.grandviewresearch.com/industry-analysis/us-camping-hiking-gear-market-report"}
+    ]
+  }
+};
+
+var BADGE_LABELS = {complete:"Complete",in_progress:"In progress",at_risk:"At risk",planned:"Planned"};
+var KPI_COLOR = {up:"#3B6D11",down:"#A32D2D",neutral:"#888"};
+var KPI_ICON = {up:"▲",down:"▼",neutral:"—"};
+
+var state = PRODUCTS.map(function(name, i) {
+  return {
+    name: name,
+    input: PLACEHOLDERS[i],
+    musings: "",
+    images: [],
+    dashboard: null,
+    loading: false,
+    error: "",
+    intel: STATIC_INTEL[name] || null,
+    intelDate: STATIC_INTEL[name] ? new Date("2026-04-02") : null
+  };
+});
+
+var activeProduct = 0;
+var lbImages = [];
+var lbIdx = 0;
+
+function switchProduct(idx) {
+  activeProduct = idx;
+  document.querySelectorAll(".product-tab").forEach(function(t, i) {
+    t.classList.toggle("active", i === idx);
+  });
+  renderPanel();
+}
+
+function renderPanel() {
+  var s = state[activeProduct];
+  var hasDash = !!s.dashboard;
+
+  var thumbsHTML = s.images.map(function(img, i) {
+    return '<div class="ithumb"><img src="' + img + '" /><button class="iremove" onclick="removeImg(' + i + ')">&#215;</button></div>';
+  }).join("");
+
+  var html = '<div class="view-toggle">'
+    + '<button class="vtab active" id="vt-input" onclick="setView(\'input\')">Team input</button>'
+    + '<button class="vtab' + (hasDash ? '' : ' disabled') + '" id="vt-dash" onclick="setView(\'dashboard\')"' + (hasDash ? '' : ' disabled') + '>Dashboard view</button>'
+    + '</div>'
+    + '<div id="view-input">'
+    + '<p class="sec-label">Highlights &amp; musings</p>'
+    + '<p class="hint">Anything on your mind — context, concerns, observations. Shown as-is on the dashboard.</p>'
+    + '<textarea id="musings-input" rows="4" oninput="state[activeProduct].musings=this.value" placeholder="e.g. Numbers look soft but we had fewer auction days this month...">' + esc(s.musings) + '</textarea>'
+    + '<p class="hint" style="margin-top:12px;">Paste or upload images to include in this section.</p>'
+    + '<div class="img-drop" id="drop-area" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)" onclick="document.getElementById(\'file-input\').click()" tabindex="0">'
+    + '<p class="img-drop-hint">Drag &amp; drop, <span>click to upload</span>, or paste (Ctrl+V / Cmd+V)</p>'
+    + '</div>'
+    + '<input type="file" id="file-input" accept="image/*" multiple style="display:none" onchange="onFileInput(event)" />'
+    + (s.images.length ? '<div class="img-previews">' + thumbsHTML + '</div>' : '')
+    + '<p class="sec-label" style="margin-top:1.25rem;">Data</p>'
+    + '<p class="hint">Paste ' + s.name + ' data — KPIs, roadmap items, notes, CSV, or JSON.</p>'
+    + '<textarea id="data-input" rows="12" oninput="state[activeProduct].input=this.value">' + esc(s.input) + '</textarea>'
+    + '<p class="errmsg" id="error-msg">' + esc(s.error) + '</p>'
+    + '<div style="display:flex;align-items:center;gap:12px;margin-top:10px;">'
+    + '<button class="btn" id="gen-btn" onclick="generate()"' + (s.loading ? ' disabled' : '') + '>' + (s.loading ? 'Generating\u2026' : 'Generate dashboard') + '</button>'
+    + '<span class="status-dot' + (hasDash ? ' ready' : '') + '"></span>'
+    + '<span style="font-size:12px;color:#888;">' + (hasDash ? 'Dashboard ready' : 'No dashboard yet') + '</span>'
+    + '</div>'
+    + '</div>'
+    + '<div id="view-dashboard" style="display:none;">'
+    + (hasDash ? renderDash(s) : '<div style="text-align:center;padding:3rem;color:#aaa;font-size:14px;">No dashboard generated yet.</div>')
+    + (hasDash ? '<button class="btn" style="margin-top:1rem;" onclick="setView(\'input\')">&#8592; Update data</button>' : '')
+    + '</div>';
+
+  document.getElementById("panels").innerHTML = html;
+}
+
+function renderDash(s) {
+  var d = s.dashboard;
+  var out = '';
+
+  out += '<div style="margin-bottom:1.5rem;">'
+    + '<div style="font-size:20px;font-weight:500;margin-bottom:3px;">' + esc(d.title || '') + '</div>'
+    + '<div style="font-size:13px;color:#666;margin-bottom:3px;">' + esc(d.subtitle || '') + '</div>'
+    + (d.last_updated ? '<div style="font-size:11px;color:#aaa;">Updated ' + esc(d.last_updated) + '</div>' : '')
+    + '</div>';
+
+  if (s.musings || s.images.length) {
+    out += '<p class="sec-label">Highlights &amp; musings</p>'
+      + '<div class="musings-block">'
+      + (s.musings ? '<p>' + esc(s.musings) + '</p>' : '')
+      + '</div>';
+    if (s.images.length) {
+      out += '<div class="dash-imgs">'
+        + s.images.map(function(src, i) {
+            return '<div class="dthumb" onclick="lbOpen(' + i + ')"><img src="' + src + '" /></div>';
+          }).join('')
+        + '</div>';
+    }
+  }
+
+  out += '<p class="sec-label">Key metrics</p><div class="kpi-grid">';
+  (d.kpis || []).forEach(function(k) {
+    out += '<div class="kpi-card">'
+      + '<div class="kpi-label">' + esc(k.label) + '</div>'
+      + '<div class="kpi-value">' + esc(k.value) + '</div>'
+      + (k.change ? '<div class="kpi-change" style="color:' + (KPI_COLOR[k.status] || KPI_COLOR.neutral) + '">' + (KPI_ICON[k.status] || '—') + ' ' + esc(k.change) + '</div>' : '')
+      + '</div>';
+  });
+  out += '</div>';
+
+  out += '<p class="sec-label">Analysis</p>'
+    + '<div class="analysis-block" style="margin-bottom:1.75rem;"><p>' + esc(d.analysis || '') + '</p></div>';
+
+  var roadmap = d.roadmap || [];
+  if (roadmap.length) {
+    out += '<p class="sec-label">Roadmap</p><div class="roadmap">';
+    roadmap.forEach(function(r) {
+      out += '<div class="ritem">'
+        + '<span class="badge badge-' + r.status + '">' + (BADGE_LABELS[r.status] || r.status) + '</span>'
+        + '<div><div class="iname">' + esc(r.item) + '</div>'
+        + (r.detail ? '<div class="idetail">' + esc(r.detail) + '</div>' : '')
+        + '</div></div>';
+    });
+    out += '</div>';
+  }
+
+  if (d.notes) {
+    out += '<div class="notes-box"><div class="notes-lbl">Notes</div><p>' + esc(d.notes) + '</p></div>';
+  }
+
+  if (s.intel) {
+    out += '<div class="market-box">'
+      + '<div class="market-hdr">'
+      + '<span class="market-lbl">Market intelligence</span>'
+      + (s.intelDate ? '<span class="market-date">Refreshed ' + new Date(s.intelDate).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}) + '</span>' : '')
+      + '</div>'
+      + '<p>' + esc(s.intel.summary) + '</p>'
+      + '<div class="market-sources">'
+      + (s.intel.sources || []).map(function(src) {
+          return '<a href="' + src.url + '" target="_blank">&#8599; ' + esc(src.label) + '</a>';
+        }).join('')
+      + '</div></div>';
+  }
+
+  return out;
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function setView(v) {
+  document.getElementById("view-input").style.display = v === "input" ? "" : "none";
+  document.getElementById("view-dashboard").style.display = v === "dashboard" ? "" : "none";
+  document.getElementById("vt-input").classList.toggle("active", v === "input");
+  document.getElementById("vt-dash").classList.toggle("active", v === "dashboard");
+  if (v === "dashboard") lbImages = state[activeProduct].images;
+}
+
+function needsRefresh(s) {
+  if (!INTEL_PROMPTS[s.name]) return false;
+  if (!s.intelDate) return true;
+  return (new Date() - new Date(s.intelDate)) / 86400000 > 14;
+}
+
+async function refreshIntel(s) {
+  try {
+    var res = await fetch(PROXY, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model: "gemini-2.5-flash",
+        max_tokens: 1000,
+        system: INTEL_SYSTEM,
+        messages: [{role:"user", content: INTEL_PROMPTS[s.name]}]
+      })
+    });
+    var data = await res.json();
+    var raw = (data.content || []).map(function(b){return b.text||'';}).join('');
+    var parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    s.intel = parsed;
+    s.intelDate = new Date();
+  } catch(e) {
+    console.warn("Market intel refresh failed:", e.message);
+  }
+}
+
+async function generate() {
+  var s = state[activeProduct];
+  var mt = document.getElementById("musings-input");
+  var dt = document.getElementById("data-input");
+  if (mt) s.musings = mt.value;
+  if (dt) s.input = dt.value;
+  if (!s.input.trim()) { s.error = "Please enter some data."; renderPanel(); return; }
+  s.error = ""; s.loading = true; renderPanel();
+
+  try {
+    if (needsRefresh(s)) await refreshIntel(s);
+
+    var res = await fetch(PROXY, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model: "gemini-2.5-flash",
+        max_tokens: 1000,
+        system: "You are a dashboard rendering engine. Parse mixed input data and output a structured dashboard as JSON only — no markdown fences, no preamble. Format: {\"title\":\"\",\"subtitle\":\"\",\"last_updated\":\"\",\"kpis\":[{\"label\":\"\",\"value\":\"\",\"change\":\"\",\"status\":\"up|down|neutral\"}],\"analysis\":\"\",\"roadmap\":[{\"item\":\"\",\"status\":\"complete|in_progress|at_risk|planned\",\"detail\":\"\"}],\"notes\":\"\"}. Rules: 2-8 KPIs. roadmap status must be exactly: complete, in_progress, at_risk, or planned.",
+        messages: [{role:"user", content: s.input.trim()}]
+      })
+    });
+    var text = await res.text();
+    if (!text || !text.trim()) throw new Error("Empty response from proxy (status " + res.status + ")");
+    var data = JSON.parse(text);
+    if (data.error) throw new Error("Proxy error: " + JSON.stringify(data.error));
+    var raw = (data.content || []).map(function(b){return b.text||'';}).join('');
+    if (!raw) throw new Error("No content in response: " + JSON.stringify(data).slice(0,200));
+    s.dashboard = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    s.error = "";
+  } catch(e) {
+    s.error = "Failed to generate dashboard. Error: " + e.message;
+  }
+
+  s.loading = false;
+  renderPanel();
+  if (s.dashboard) setView("dashboard");
+}
+
+function addImgs(files) {
+  Array.from(files).forEach(function(f) {
+    if (!f.type.startsWith("image/")) return;
+    var r = new FileReader();
+    r.onload = function(e) { state[activeProduct].images.push(e.target.result); renderPanel(); };
+    r.readAsDataURL(f);
+  });
+}
+function removeImg(idx) { state[activeProduct].images.splice(idx,1); renderPanel(); }
+function onFileInput(e) { addImgs(e.target.files); e.target.value=""; }
+function onDragOver(e) { e.preventDefault(); e.currentTarget.classList.add("over"); }
+function onDragLeave(e) { e.currentTarget.classList.remove("over"); }
+function onDrop(e) { e.preventDefault(); e.currentTarget.classList.remove("over"); addImgs(e.dataTransfer.files); }
+
+document.addEventListener("paste", function(e) {
+  var items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  for (var i=0; i<items.length; i++) {
+    if (items[i].type.startsWith("image/")) { e.preventDefault(); addImgs([items[i].getAsFile()]); }
+  }
+});
+
+function lbOpen(idx) { lbImages = state[activeProduct].images; lbIdx = idx; document.getElementById("lb-img").src = lbImages[idx]; document.getElementById("lightbox").classList.add("open"); }
+function lbClose(e) { if (!e || e.target===document.getElementById("lightbox") || e.currentTarget.classList.contains("lb-close")) document.getElementById("lightbox").classList.remove("open"); }
+function lbNav(dir, e) { if(e)e.stopPropagation(); lbIdx=(lbIdx+dir+lbImages.length)%lbImages.length; document.getElementById("lb-img").src=lbImages[lbIdx]; }
+document.addEventListener("keydown", function(e) {
+  if (!document.getElementById("lightbox").classList.contains("open")) return;
+  if (e.key==="Escape") lbClose();
+  if (e.key==="ArrowRight") lbNav(1,null);
+  if (e.key==="ArrowLeft") lbNav(-1,null);
+});
+
+renderPanel();
+</script>
+</body>
+</html>
