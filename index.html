@@ -243,10 +243,10 @@ function renderPanel() {
   }).join("");
 
   var html = '<div class="view-toggle">'
-    +'<button class="vtab active" id="vt-input" onclick="setView(\'input\')">Team input</button>'
-    +'<button class="vtab'+(hasDash?'':' disabled')+'" id="vt-dash" onclick="setView(\'dashboard\')"'+(hasDash?'':' disabled')+'>Dashboard view</button>'
+    +'<button class="vtab'+(hasDash?' active':'')+'" id="vt-input" onclick="setView(\'input\')">Team input</button>'
+    +'<button class="vtab'+(hasDash?' active':' disabled')+'" id="vt-dash" onclick="setView(\'dashboard\')"'+(hasDash?'':' disabled')+'>Dashboard view</button>'
     +'</div>'
-    +'<div id="view-input">'
+    +'<div id="view-input" style="display:'+(hasDash?'none':'block')+';">'
     +'<p class="sec-label">Highlights &amp; musings</p>'
     +'<p class="hint">Anything on your mind — context, concerns, observations. Shown as-is on the dashboard.</p>'
     +'<textarea id="musings-input" rows="4" oninput="state[activeProduct].musings=this.value" placeholder="e.g. Numbers look soft but we had fewer auction days this month...">'+esc(s.musings)+'</textarea>'
@@ -266,7 +266,7 @@ function renderPanel() {
     +'<span style="font-size:12px;color:#888;">'+(hasDash?'Dashboard ready':'No dashboard yet')+'</span>'
     +'</div>'
     +'</div>'
-    +'<div id="view-dashboard" style="display:none;">'
+    +'<div id="view-dashboard" style="display:'+(hasDash?'block':'none')+';">'
     +(hasDash ? renderDash(s) : '<div style="text-align:center;padding:3rem;color:#aaa;font-size:14px;">No dashboard generated yet.</div>')
     +(hasDash ? '<button class="btn" style="margin-top:1rem;" onclick="setView(\'input\')">&#8592; Update data</button>' : '')
     +'</div>';
