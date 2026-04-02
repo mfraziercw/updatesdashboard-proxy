@@ -90,6 +90,7 @@ textarea{width:100%;font-family:monospace;font-size:13px;padding:12px;border:1px
 .pw-error{font-size:12px;color:#a32d2d;margin-top:6px;min-height:16px;}
 </style>
 
+<div id="main-content" style="display:none;">
 <div id="pw-screen" class="pw-screen">
   <div class="pw-card">
     <h2>Bi-weekly Consumer Product Updates</h2>
@@ -123,8 +124,9 @@ var PASSWORD = "rv2026";
 function checkPw() {
   var val = document.getElementById("pw-input").value;
   if (val === PASSWORD) {
-    document.getElementById("pw-screen").style.display = "none";
+    document.getElementById("main-content").style.display = "none";
     document.getElementById("pw-input").value = "";
+    renderPanel();
   } else {
     document.getElementById("pw-error").textContent = "Incorrect password — try again.";
     document.getElementById("pw-input").value = "";
