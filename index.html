@@ -78,7 +78,27 @@ textarea{width:100%;font-family:monospace;font-size:13px;padding:12px;border:1px
 </style>
 </head>
 <body>
-<div class="shell">
+<style>
+.pw-screen{position:fixed;inset:0;background:#f5f5f3;display:flex;align-items:center;justify-content:center;z-index:9999;}
+.pw-card{background:#fff;border:1px solid #ddd;border-radius:12px;padding:2rem 2.5rem;width:100%;max-width:360px;text-align:center;}
+.pw-card h2{font-size:1.1rem;font-weight:500;margin-bottom:.4rem;}
+.pw-card p{font-size:13px;color:#888;margin-bottom:1.25rem;}
+.pw-card input{width:100%;padding:10px 12px;font-size:14px;border:1px solid #ddd;border-radius:8px;margin-bottom:10px;text-align:center;letter-spacing:.1em;}
+.pw-card input:focus{outline:none;border-color:#888;}
+.pw-card button{width:100%;padding:9px;font-size:14px;font-weight:500;border:1px solid #ccc;border-radius:8px;background:#fff;cursor:pointer;}
+.pw-card button:hover{background:#f0f0f0;}
+.pw-error{font-size:12px;color:#a32d2d;margin-top:6px;min-height:16px;}
+</style>
+
+<div id="pw-screen" class="pw-screen">
+  <div class="pw-card">
+    <h2>Bi-weekly Consumer Product Updates</h2>
+    <p>Enter the password to continue</p>
+    <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()" />
+    <button onclick="checkPw()">Continue</button>
+    <p class="pw-error" id="pw-error"></p>
+  </div>
+</div>
   <h1>Bi-weekly Consumer Product Updates</h1>
   <p class="sub">RV Sales &middot; Used Acquisition &middot; Retail &middot; RVs.com</p>
   <div class="product-tabs">
@@ -98,6 +118,20 @@ textarea{width:100%;font-family:monospace;font-size:13px;padding:12px;border:1px
 </div>
 
 <script>
+var PASSWORD = "rv2026";
+
+function checkPw() {
+  var val = document.getElementById("pw-input").value;
+  if (val === PASSWORD) {
+    document.getElementById("pw-screen").style.display = "none";
+    document.getElementById("pw-input").value = "";
+  } else {
+    document.getElementById("pw-error").textContent = "Incorrect password — try again.";
+    document.getElementById("pw-input").value = "";
+    document.getElementById("pw-input").focus();
+  }
+}
+
 var PROXY = "https://updatesdashboard-proxy.vercel.app/api/dashboard";
 
 var PRODUCTS = ["RV Sales","Used Acquisition","Retail","RVs.com"];
